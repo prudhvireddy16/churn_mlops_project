@@ -1,0 +1,14 @@
+name: ML CI Pipeline
+on: [push]
+jobs:
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+      - name: Syntax Check
+        run: python -m py_compile src/train.py api/app.py
