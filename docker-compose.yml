@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  # The Python Brain
+  ml_service:
+    build: ./ml_service
+    container_name: ml_service
+    # No ports exposed to the public! Only Go can see this.
+
+  # The Go Entry Door
+  go_gateway:
+    build: ./go_gateway
+    container_name: go_gateway
+    ports:
+      - "5000:5000"
+    depends_on:
+      - ml_service
+    environment:
+      - ML_SERVICE_URL=http://ml_service:8000/predict

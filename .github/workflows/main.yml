@@ -1,14 +1,36 @@
-name: ML CI Pipeline
-on: [push]
+name: Multi-Service ML Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
 jobs:
-  check-code:
+  # Job 1: Check the Python ML Service
+  check-python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install Dependencies
-        run: pip install -r requirements.txt
-      - name: Syntax Check
-        run: python -m py_compile src/train.py api/app.py
+      - name: Install Python Deps
+        run: |
+          cd ml_service
+          pip install -r requirements.txt
+      - name: Python Syntax Check
+        run: python -m py_compile ml_service/app/app.py
+
+  # Job 2: Check the Go Gateway
+  check-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+      - name: Build Go Gateway
+        run: |
+          cd go_gateway
+          go build -o main .
